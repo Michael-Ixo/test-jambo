@@ -36,8 +36,8 @@ export const initializeWC = async (): Promise<USER | undefined> => {
 			// relayUrl: process.env.NEXT_PUBLIC_WC_RELAY_URL,
 			projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID,
 			metadata: {
-				name: 'Ixo',
-				description: 'Ixo Wallet Connect',
+				name: 'Jambo Test',
+				description: 'Jambo Test Wallet Connect',
 				url: 'https://ixo.world',
 				icons: ['https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'],
 			},
@@ -71,7 +71,8 @@ export const initializeWC = async (): Promise<USER | undefined> => {
 	let _session: SessionTypes.Struct;
 
 	if (signClient.session.length) {
-		return await onSessionConnected();
+		const user = await onSessionConnected();
+		if (user) return user;
 	}
 
 	try {
@@ -119,7 +120,7 @@ const onSessionConnected = async (): Promise<USER | undefined> => {
 			return { pubKey: pubkeyByteArray, address, algo: accounts[0].algo };
 		}
 	} catch (error) {
-		console.log('Error getAccounts: ', error);
+		console.log('Error onSessionConnected: ', error);
 	}
 	return undefined;
 };
@@ -174,16 +175,16 @@ export const signDirect = async (signerAddress: string, signDoc: SignDoc): Promi
 		throw new Error('Error signDirect: ');
 	}
 
-	// console.log({
-	// 	signed: signDoc,
-	// 	signature: {
-	// 		pub_key: {
-	// 			type: amino.pubkeyType.secp256k1,
-	// 			value: uint8Arr_to_b64(pubkeyByteArray),
-	// 		},
-	// 		signature: result.signature,
-	// 	},
-	// });
+	console.log({
+		signed: signDoc,
+		signature: {
+			pub_key: {
+				type: amino.pubkeyType.secp256k1,
+				value: uint8Arr_to_b64(pubkeyByteArray),
+			},
+			signature: result.signature,
+		},
+	});
 
 	return {
 		signed: signDoc,
