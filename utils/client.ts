@@ -4,7 +4,7 @@ import { TRX_FEE, TRX_MSG } from 'types/transactions';
 import axios from 'axios';
 import { apiCurrencyToCurrency } from './currency';
 import { Currency } from 'types/wallet';
-import { createSigningClient, SigningStargateClient, cosmos, ixo, utils } from '@ixo/impactxclient-sdk';
+import { createSigningClient, SigningStargateClient, cosmos, ixo, utils, createQueryClient } from '@ixo/impactxclient-sdk';
 
 export const initStargateClient = async (offlineSigner: any, endpoint?: string): Promise<SigningStargateClient> => {
 	const cosmJS = await createSigningClient(endpoint || BLOCKCHAIN_RPC_URL, offlineSigner);
@@ -51,10 +51,12 @@ export const generateDelegateTrx = ({ delegatorAddress, validatorAddress, denom,
 });
 
 export const getBalances = async (address: string): Promise<Currency[]> => {
+	const queryClient = await createQueryClient(BLOCKCHAIN_RPC_URL);
 	let balances = [];
 	try {
-		const res = await axios.get(BLOCKCHAIN_REST_URL + '/cosmos/bank/v1beta1/balances/' + address);
-		balances = res.data.balances.map((coin: any) => apiCurrencyToCurrency(coin));
+		const res = await queryClient.cosmos.bank.v1beta1.allBalances({ address });
+		// const res = await axios.get(BLOCKCHAIN_REST_URL + '/cosmos/bank/v1beta1/balances/' + address);
+		balances = res.balances.map((coin: any) => apiCurrencyToCurrency(coin));
 	} catch (error) {
 		console.log('/cosmos/bank/v1beta1/balances/', error);
 		throw error;
