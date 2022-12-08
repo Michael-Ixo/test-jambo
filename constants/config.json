@@ -1,5 +1,4 @@
 {
-	"siteName": "config.siteName",
 	"siteUrl": "config.siteUrl",
 	"siteTitleMeta": "config.siteTitleMeta",
 	"siteDescriptionMeta": "config.siteDescriptionMeta",
@@ -11,23 +10,23 @@
 	"about": "config.about",
 	"actions": [
 		{
-			"id": "eKXPPhewkJDLbE1bq1iboa",
+			"id": "dummy",
 			"steps": [
 				{
-					"id": "get_validator_address",
-					"name": "Get validator address"
+					"id": "get_receiver_address",
+					"name": "Get receiver address"
 				},
 				{
-					"id": "select_delegate_amount",
-					"name": "DEfine amount to delegate"
+					"id": "select_token_and_amount",
+					"name": "Select token and amount"
 				},
 				{
-					"id": "staking_MsgDelegate",
+					"id": "bank_MsgSend",
 					"name": "Review and sign"
 				}
 			],
-			"name": "Stake",
-			"description": "Stake flow",
+			"name": "name",
+			"description": "description (send dummy flow)",
 			"image": ""
 		}
 	]
