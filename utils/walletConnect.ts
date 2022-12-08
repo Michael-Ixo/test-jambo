@@ -165,7 +165,7 @@ export const signDirect = async (signerAddress: string, signDoc: SignDoc): Promi
 			chainId,
 			request: {
 				method: WC_METHODS.signDirect,
-				params: { signerAddress, signDoc },
+				params: { signerAddress, signDoc: stringifySignDoc(signDoc) },
 			},
 		});
 		if (!result.signature) throw new Error();
