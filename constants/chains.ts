@@ -49,8 +49,8 @@ export const CHAINS = {
 		},
 		features: ['stargate'],
 	},
-	'pandora-5': {
-		chainId: 'pandora-5',
+	'pandora-6': {
+		chainId: 'pandora-6',
 		chainName: 'ixo Testnet',
 		rpc: 'https://testnet.ixo.earth/rpc/',
 		rest: 'https://testnet.ixo.earth/rest/',

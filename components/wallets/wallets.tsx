@@ -24,7 +24,7 @@ const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
 					<WalletImg width={58} height={58} />
 					<h3>Choose Wallet</h3>
 					{/* {keysafe && <Button label="Keysafe" onClick={() => onSelected(WALLET_TYPE.keysafe)} />} */}
-					{/* <WalletCard name="Wallet Connect" img="/images/wallets/wallet-connect.png" onClick={() => onSelected(WALLET_TYPE.walletConnect)} /> */}
+					<WalletCard name="Wallet Connect" img="/images/wallets/wallet-connect.png" onClick={() => onSelected(WALLET_TYPE.walletConnect)} />
 					{/* {keplrWallet && <WalletCard name="Keplr Wallet" img="/images/wallets/keplr.png" onClick={() => onSelected(WALLET_TYPE.keplr)} />} */}
 					{operaWallet && <WalletCard name="Opera Wallet" img="/images/wallets/opera.png" onClick={() => onSelected(WALLET_TYPE.opera)} />}
 					<div className={styles.flex3} />
