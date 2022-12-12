@@ -11,7 +11,7 @@ import config from '@constants/config.json';
 import { SessionTypes } from '@walletconnect/types';
 import { AccountData, DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SignDoc } from '@client-sdk/codec/external/cosmos/tx/v1beta1/tx';
-import { uint8Arr_to_b64, stringifySignDoc, b64_to_uint8Arr } from './encoding';
+import { uint8Arr_to_b64, stringifySignDoc, uint8Arr_to_b58 } from './encoding';
 
 let signClient: SignClient;
 export let address: string;
@@ -115,8 +115,7 @@ const onSessionConnected = async (): Promise<USER | undefined> => {
 		const accounts = await getAccounts();
 		if (accounts.length) {
 			address = accounts[0].address;
-			// pubkeyByteArray = b64_to_uint8Arr(uint8Arr_to_b64(Object.values(accounts[0].pubkey) as any));
-			// console.log({ pubkeyByteArray });
+			pubkeyByteArray = accounts[0].pubkey;
 			return { pubKey: pubkeyByteArray, address, algo: accounts[0].algo };
 		}
 	} catch (error) {
@@ -141,8 +140,8 @@ export const getAccounts = async (): Promise<readonly AccountData[]> => {
 				params: undefined,
 			},
 		});
-		console.log({ accounts });
-		return accounts;
+		const parsedAccounts = accounts.map(acc => Object.assign(Object.assign({}, acc), { pubkey: new Uint8Array(Object.values(acc.pubkey)) }));
+		return parsedAccounts;
 	} catch (error) {
 		console.log('Error getAccounts: ', error);
 	}

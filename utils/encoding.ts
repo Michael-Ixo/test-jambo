@@ -26,11 +26,14 @@ export const b58_to_uint8Arr = (str: string): Uint8Array => {
 	return base58.decode(str);
 };
 
+export const uint8Arr_to_b58 = (array: Uint8Array) => {
+	return base58.encode(array);
+};
+
 export const uint8Arr_to_b64 = (array: Uint8Array): string => {
-	console.log({ array });
 	const b64 = toBase64(array);
-	console.log({ b64 });
-	return toBase64(array);
+	// console.log({ b64 });
+	return b64;
 };
 
 export const b64_to_uint8Arr = (str: string): Uint8Array => {
@@ -90,5 +93,5 @@ export const uint8ArrayToStr = (data: Uint8Array): string => {
 };
 
 export const stringifySignDoc = (signDoc: SignDoc) => {
-	return Object.assign(Object.assign({}, signDoc), { bodyBytes: toHex(signDoc.bodyBytes), authInfoBytes: toHex(signDoc.authInfoBytes), accountNumber: signDoc.accountNumber.toString(16) });
+	return Object.assign(Object.assign({}, signDoc), { bodyBytes: toHex(signDoc.bodyBytes), authInfoBytes: toHex(signDoc.authInfoBytes), accountNumber: signDoc.accountNumber.toNumber() });
 };
