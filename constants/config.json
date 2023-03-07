@@ -9,6 +9,7 @@
   "headerShowName": true,
   "headerShowLogo": true,
   "about": "Manage your IXO token staking. Earn IXO staking rewards by helping to secure the Internet of Impact. You can choose from the list of available nodes in the ixo blockchain network and re-delegate or withdraw your stake at any time.",
+  "termsAndConditions": "https://my.jambo.earth/legal/termsOfUse",
   "actions": [
     {
       "id": "eKXPPhewkJDLbE1bq1iboa",
