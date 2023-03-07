@@ -16,106 +16,90 @@ import useGlobalValidators from '@hooks/globalValidators';
 import { WalletContext } from '@contexts/wallet';
 
 type ValidatorAddressProps = {
-	onSuccess: (data: StepDataType<STEPS.get_validator_delegate>) => void;
-	onBack?: () => void;
-	data?: StepDataType<STEPS.get_validator_delegate>;
-	header?: string;
-	config: VALIDATOR_CONFIG;
-	excludeValidators: string | string[];
+  onSuccess: (data: StepDataType<STEPS.get_validator_delegate>) => void;
+  onBack?: () => void;
+  data?: StepDataType<STEPS.get_validator_delegate>;
+  header?: string;
+  config: VALIDATOR_CONFIG;
+  excludeValidators: string | string[];
 };
 
 const ValidatorAddress: FC<ValidatorAddressProps> = ({ onSuccess, onBack, header, config, excludeValidators }) => {
-	const [selectedValidator, setSelectedValidator] = useState<VALIDATOR | null>(null);
-	const { wallet } = useContext(WalletContext);
-	const { validators, filterValidators, validatorsLoading, searchFilter, sortFilter } = useGlobalValidators({
-		delegatedValidatorsOnly: config.delegatedValidatorsOnly,
-	});
+  const [selectedValidator, setSelectedValidator] = useState<VALIDATOR | null>(null);
+  const { wallet } = useContext(WalletContext);
 
-	useEffect(() => {
-		if (!config.showValidatorDetails && formIsValid()) {
-			handleSubmit(null);
-		}
-	}, [selectedValidator]);
+  useEffect(() => {
+    if (!config.showValidatorDetails && formIsValid()) {
+      handleSubmit(null);
+    }
+  }, [selectedValidator]);
 
-	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		filterValidators('search', event.target.value);
-	};
+  const formIsValid = () => selectedValidator?.address?.length;
 
-	const formIsValid = () => selectedValidator?.address?.length;
+  const handleSubmit = (event: FormEvent<HTMLFormElement> | null) => {
+    event?.preventDefault();
+    if (!formIsValid()) return alert('A validator must be selected');
+    onSuccess({ validator: selectedValidator as VALIDATOR });
+  };
 
-	const handleSubmit = (event: FormEvent<HTMLFormElement> | null) => {
-		event?.preventDefault();
-		if (!formIsValid()) return alert('A validator must be selected');
-		onSuccess({ validator: selectedValidator as VALIDATOR });
-	};
+  const handleValidatorClick = (validator: VALIDATOR) => () => {
+    setSelectedValidator(validator);
+  };
 
-	const handleValidatorClick = (validator: VALIDATOR) => () => {
-		setSelectedValidator(validator);
-	};
+  const unselectValidator = () => {
+    setSelectedValidator(null);
+  };
 
-	const handleFilterClick = (filterType: string) => (event: any) => {
-		event?.preventDefault();
-		filterValidators('sort', filterType);
-	};
+  if (config.showValidatorDetails && selectedValidator?.address)
+    return (
+      <>
+        <Header header={header} />
 
-	const unselectValidator = () => {
-		setSelectedValidator(null);
-	};
+        <main className={cls(utilsStyles.main, utilsStyles.columnJustifyCenter, styles.stepContainer)}>
+          <form className={styles.stepsForm} onSubmit={handleSubmit} autoComplete='none'>
+            <ValidatorCard validator={selectedValidator} />
+          </form>
+          <div className={utilsStyles.spacer3} />
+        </main>
 
-	if (config.showValidatorDetails && selectedValidator?.address)
-		return (
-			<>
-				<Header pageTitle="Validator details" header={header} />
+        <Footer
+          onBack={unselectValidator}
+          onBackUrl={onBack ? undefined : ''}
+          onForward={formIsValid() ? () => handleSubmit(null) : null}
+        />
+      </>
+    );
 
-				<main className={cls(utilsStyles.main, utilsStyles.columnJustifyCenter, styles.stepContainer)}>
-					<div className={utilsStyles.spacer} />
-					<form className={styles.stepsForm} onSubmit={handleSubmit} autoComplete="none">
-						<ValidatorCard validator={selectedValidator} />
-					</form>
-					<div className={utilsStyles.spacer} />
+  return (
+    <>
+      <Header header={header} />
 
-					<Footer
-						onBack={unselectValidator}
-						onBackUrl={onBack ? undefined : ''}
-						onCorrect={formIsValid() ? () => handleSubmit(null) : null}
-					/>
-				</main>
-			</>
-		);
+      <main className={cls(utilsStyles.main, utilsStyles.columnJustifyCenter, styles.stepContainer)}>
+        {!!config.requireFunds && !wallet?.balances?.balances?.length ? (
+          <IconText title="You don't have any tokens to stake." Img={SadFace} imgSize={50} />
+        ) : (
+          <form className={styles.stepsForm} onSubmit={handleSubmit} autoComplete='none'>
+            <ValidatorList
+              label={config.label}
+              allowFilters={!!config.allowFilters}
+              delegatedValidatorsOnly={config.delegatedValidatorsOnly}
+              onValidatorClick={handleValidatorClick}
+              excludeValidators={[excludeValidators].flat()}
+              noValidators={
+                <IconText title="You don't have any tokens delegated for this account." Img={SadFace} imgSize={50} />
+              }
+            />
+          </form>
+        )}
+      </main>
 
-	return (
-		<>
-			<Header pageTitle={config.pageTitle} header={header} />
-
-			<main className={cls(utilsStyles.main, utilsStyles.columnJustifyCenter, styles.stepContainer)}>
-				<div className={utilsStyles.spacer} />
-				{validatorsLoading ? (
-					<Loader />
-				) : !!config.requireFunds && !wallet?.balances?.balances?.length ? (
-					<IconText text="You don't have any tokens to stake." Img={SadFace} imgSize={50} />
-				) : validators === null || (config.delegatedValidatorsOnly && !validators.length) ? (
-					<IconText text="You don't have any tokens delegated for this account." Img={SadFace} imgSize={50} />
-				) : (
-					<form className={styles.stepsForm} onSubmit={handleSubmit} autoComplete="none">
-						<ValidatorList
-							label={config.label}
-							allowFilters={!!config.allowFilters}
-							delegatedValidatorsOnly={config.delegatedValidatorsOnly}
-							onValidatorClick={handleValidatorClick}
-							excludeValidators={[excludeValidators].flat()}
-						/>
-					</form>
-				)}
-				<div className={utilsStyles.spacer} />
-
-				<Footer
-					onBack={onBack}
-					onBackUrl={onBack ? undefined : ''}
-					onCorrect={formIsValid() ? () => handleSubmit(null) : null}
-				/>
-			</main>
-		</>
-	);
+      <Footer
+        onBack={onBack}
+        onBackUrl={onBack ? undefined : ''}
+        onForward={formIsValid() ? () => handleSubmit(null) : null}
+      />
+    </>
+  );
 };
 
 export default ValidatorAddress;

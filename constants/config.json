@@ -1,90 +1,90 @@
 {
-	"siteName": "Stake",
-	"siteUrl": "https://delicate-scone-cc1f91.netlify.app/",
-	"siteTitleMeta": "Stake",
-	"siteDescriptionMeta": "Manage your delegations in IXO validators.",
-	"wcNamespace": "ixo",
-	"fontUrl": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap",
-	"fontName": "Roboto",
-	"headerShowName": true,
-	"headerShowLogo": true,
-	"about": "Manage your IXO token staking. Earn IXO staking rewards by helping to secure the Internet of Impact. You can choose from the list of available nodes in the ixo blockchain network and re-delegate or withdraw your stake at any time.",
-	"actions": [
-		{
-			"id": "eKXPPhewkJDLbE1bq1iboa",
-			"steps": [
-				{
-					"id": "get_validator_delegate",
-					"name": "Get validator address"
-				},
-				{
-					"id": "select_amount_delegate",
-					"name": "Define amount to delegate"
-				},
-				{
-					"id": "staking_MsgDelegate",
-					"name": "Review and sign"
-				}
-			],
-			"name": "Delegate",
-			"description": "Stake IXO tokens and earn rewards (locked for 21 days)",
-			"image": "eKXPPhewkJDLbE1bq1iboa.png"
-		},
-		{
-			"id": "eKXPPhewkJDLbE1bq1ibob",
-			"steps": [
-				{
-					"id": "get_delegated_validator_undelegate",
-					"name": "Get delegation validator address"
-				},
-				{
-					"id": "select_amount_undelegate",
-					"name": "Define amount to undelegate"
-				},
-				{
-					"id": "staking_MsgUndelegate",
-					"name": "Review and sign"
-				}
-			],
-			"name": "Undelegate",
-			"description": "Get back your stake of IXO tokens (after 21 days)",
-			"image": "eKXPPhewkJDLbE1bq1ibob.png"
-		},
-		{
-			"id": "eKXPPhewkJDLbE1bq1iboc",
-			"steps": [
-				{
-					"id": "get_delegated_validator_redelegate",
-					"name": "Get delegation validator address"
-				},
-				{
-					"id": "select_amount_redelegate",
-					"name": "Define amount to redelegate"
-				},
-				{
-					"id": "get_validator_redelegate",
-					"name": "Get validator address"
-				},
-				{
-					"id": "staking_MsgRedelegate",
-					"name": "Review and sign"
-				}
-			],
-			"name": "Redelegate",
-			"description": "Move your IXO stake to another validator (continue earning rewards)",
-			"image": "eKXPPhewkJDLbE1bq1iboc.png"
-		},
-		{
-			"id": "eKXPPhewkJDLbE1bq1ibod",
-			"steps": [
-				{
-					"id": "distribution_MsgWithdrawDelegatorReward",
-					"name": "Review and sign"
-				}
-			],
-			"name": "Claim Rewards",
-			"description": "Get all your IXO rewards (and delegate these to compound)",
-			"image": "eKXPPhewkJDLbE1bq1ibod.png"
-		}
-	]
+  "siteName": "Stake",
+  "siteUrl": "https://delicate-scone-cc1f91.netlify.app/",
+  "siteTitleMeta": "Stake",
+  "siteDescriptionMeta": "Manage your delegations in IXO validators.",
+  "wcNamespace": "ixo",
+  "fontUrl": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap",
+  "fontName": "Roboto",
+  "headerShowName": true,
+  "headerShowLogo": true,
+  "about": "Manage your IXO token staking. Earn IXO staking rewards by helping to secure the Internet of Impact. You can choose from the list of available nodes in the ixo blockchain network and re-delegate or withdraw your stake at any time.",
+  "actions": [
+    {
+      "id": "eKXPPhewkJDLbE1bq1iboa",
+      "steps": [
+        {
+          "id": "get_validator_delegate",
+          "name": "Get validator address"
+        },
+        {
+          "id": "select_amount_delegate",
+          "name": "Define amount to delegate"
+        },
+        {
+          "id": "staking_MsgDelegate",
+          "name": "Review and sign"
+        }
+      ],
+      "name": "Delegate",
+      "description": "Stake IXO tokens and earn rewards (locked for 21 days)",
+      "image": "eKXPPhewkJDLbE1bq1iboa.png"
+    },
+    {
+      "id": "eKXPPhewkJDLbE1bq1ibob",
+      "steps": [
+        {
+          "id": "get_delegated_validator_undelegate",
+          "name": "Get delegation validator address"
+        },
+        {
+          "id": "select_amount_undelegate",
+          "name": "Define amount to undelegate"
+        },
+        {
+          "id": "staking_MsgUndelegate",
+          "name": "Review and sign"
+        }
+      ],
+      "name": "Undelegate",
+      "description": "Get back your stake of IXO tokens (after 21 days)",
+      "image": "eKXPPhewkJDLbE1bq1ibob.png"
+    },
+    {
+      "id": "eKXPPhewkJDLbE1bq1iboc",
+      "steps": [
+        {
+          "id": "get_delegated_validator_redelegate",
+          "name": "Get delegation validator address"
+        },
+        {
+          "id": "select_amount_redelegate",
+          "name": "Define amount to redelegate"
+        },
+        {
+          "id": "get_validator_redelegate",
+          "name": "Get validator address"
+        },
+        {
+          "id": "staking_MsgRedelegate",
+          "name": "Review and sign"
+        }
+      ],
+      "name": "Redelegate",
+      "description": "Move your IXO stake to another validator (continue earning rewards)",
+      "image": "eKXPPhewkJDLbE1bq1iboc.png"
+    },
+    {
+      "id": "eKXPPhewkJDLbE1bq1ibod",
+      "steps": [
+        {
+          "id": "distribution_MsgWithdrawDelegatorReward",
+          "name": "Review and sign"
+        }
+      ],
+      "name": "Claim Rewards",
+      "description": "Get all your IXO rewards (and delegate these to compound)",
+      "image": "eKXPPhewkJDLbE1bq1ibod.png"
+    }
+  ]
 }
