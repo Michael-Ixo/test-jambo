@@ -1,37 +1,57 @@
 {
-  "siteName": "config.siteName",
-  "siteUrl": "config.siteUrl",
-  "siteTitleMeta": "config.siteTitleMeta",
-  "siteDescriptionMeta": "config.siteDescriptionMeta",
+  "siteName": "Testing Playground",
+  "siteUrl": "https://delicate-scone-cc1f91.netlify.app/",
+  "siteTitleMeta": "Testing Playground",
+  "siteDescriptionMeta": "Test the latest JAMBO actions",
   "wcNamespace": "ixo",
   "fontUrl": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap",
   "fontName": "Roboto",
   "headerShowName": true,
   "headerShowLogo": true,
-  "about": "config.about",
+  "about": "This is the testing playground with all the actions in development",
   "termsAndConditions": "https://my.jambo.earth/legal/termsOfUse",
   "actions": [
     {
-      "id": "eKXPPhewkJDLbE1bq1iboz",
+      "id": "eKXPPhewkJDLbE1bq1ibo7",
       "steps": [
         {
-          "id": "select_token_and_amount",
-          "name": "Select token and amount"
-          },
-          {
           "id": "get_receiver_address",
-          "name": "Get receiver address"
-          },
-          {
-          "id": "bank_MsgMultiSend",
+          "name": "Get validator address"
+        },
+        {
+          "id": "select_token_and_amount",
+          "name": "Define amount to delegate"
+        },
+        {
+          "id": "bank_MsgSend",
           "name": "Review and sign"
-          }
+        }
       ],
       "name": "Send",
       "description": "Crypto Send",
-      "image": "eKXPPhewkJDLbE1bq1iboa.png"
-    }
-    ,{
+      "image": "eKXPPhewkJDLbE1bq1ibo7.png"
+    },
+    {
+      "id": "eKXPPhewkJDLbE1bq1ibo8",
+      "steps": [
+        {
+          "id": "get_receiver_address",
+          "name": "Get validator address"
+        },
+        {
+          "id": "select_token_and_amount",
+          "name": "Define amount to delegate"
+        },
+        {
+          "id": "bank_MsgMultiSend",
+          "name": "Review and sign"
+        }
+      ],
+      "name": "Multi Send",
+      "description": "Crypto Send",
+      "image": "eKXPPhewkJDLbE1bq1ibo8.png"
+    },
+    {
       "id": "eKXPPhewkJDLbE1bq1iboa",
       "steps": [
         {
