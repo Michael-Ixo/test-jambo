@@ -18,7 +18,7 @@ import { ReviewStepsTypes, STEP, StepDataType, STEPS } from 'types/steps';
 import { KEPLR_CHAIN_INFO_TYPE } from 'types/chain';
 import { VALIDATOR } from 'types/validators';
 import { TRX_MSG } from 'types/transactions';
-import { getDisplayDenomFromCurrencyToken } from '@utils/currency';
+import { getDenomFromCurrencyToken, getDisplayDenomFromCurrencyToken } from '@utils/currency';
 import { broadCastMessages } from '@utils/wallets';
 import { getMicroAmount } from '@utils/encoding';
 import {
@@ -146,7 +146,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
         trx = generateDelegateTrx({
           delegatorAddress: wallet.user!.address,
           validatorAddress: dstAddress as string,
-          denom: token ? token[0]?.value : '',
+          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
           amount: getMicroAmount(amount.toString()),
         });
         break;
@@ -154,7 +154,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
         trx = generateUndelegateTrx({
           delegatorAddress: wallet.user!.address,
           validatorAddress: dstAddress as string,
-          denom: token ? token[0]?.value : '',
+          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
           amount: getMicroAmount(amount.toString()),
         });
         break;
@@ -163,7 +163,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
           delegatorAddress: wallet.user!.address,
           validatorSrcAddress: srcAddress,
           validatorDstAddress: dstAddress as string,
-          denom: token ? token[0]?.value : '',
+          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
           amount: getMicroAmount(amount.toString()),
         });
         break;
@@ -219,7 +219,9 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
             <p className={utilsStyles.label}>I am sending</p>
             <AmountAndDenom
               amount={(Array.isArray(amount) ? amount[0] ?? '' : amount) ?? ''}
-              denom={(Array.isArray(token) ? token[0].denom ?? '' : token?.denom) ?? ''}
+              denom={getDisplayDenomFromCurrencyToken(
+                Array.isArray(token) ? (token[0] as CURRENCY_TOKEN) : (token as CURRENCY_TOKEN),
+              )}
               microUnits={0}
             />
             <br />
@@ -262,7 +264,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
             {message === STEPS.staking_MsgDelegate && <p>Delegating</p>}
             <AmountAndDenom
               amount={amount as number}
-              denom={getDisplayDenomFromCurrencyToken((token as CURRENCY_TOKEN) ?? '')}
+              denom={getDisplayDenomFromCurrencyToken(token as CURRENCY_TOKEN)}
               microUnits={0}
             />
             <br />
@@ -275,7 +277,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
             {message === STEPS.staking_MsgUndelegate && <p>Undelegate</p>}
             <AmountAndDenom
               amount={(Array.isArray(amount) ? amount[0] : amount) ?? ''}
-              denom={(Array.isArray(token) ? token[0].denom : token?.denom) ?? ''}
+              denom={getDisplayDenomFromCurrencyToken(token as CURRENCY_TOKEN)}
               microUnits={0}
             />
             <br />
@@ -288,10 +290,9 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
             <p>Redelegate</p>
             <AmountAndDenom
               amount={(Array.isArray(amount) ? amount[0] : amount) ?? ''}
-              denom={(Array.isArray(token) ? token[0].denom : token?.denom) ?? ''}
+              denom={getDisplayDenomFromCurrencyToken(token as CURRENCY_TOKEN)}
               microUnits={0}
             />
-
             <br />
             <p>from</p>
             <ValidatorListItem validator={srcValidator!} onClick={() => () => {}} />
