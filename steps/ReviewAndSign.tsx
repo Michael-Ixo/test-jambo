@@ -4,9 +4,11 @@ import cls from 'classnames';
 import utilsStyles from '@styles/utils.module.scss';
 import styles from '@styles/stepsPages.module.scss';
 import Button, { BUTTON_BG_COLOR, BUTTON_BORDER_COLOR, BUTTON_SIZE } from '@components/Button/Button';
-import MultiSendCard from '@components/MultiSendCard/MultiSendCard';
+import MultiSendBottomSheet from '../components/MultiSendBottomSheet/MultiSendBottomSheet';
+import ButtonRound, { BUTTON_ROUND_SIZE } from '@components/ButtonRound/ButtonRound';
 import ValidatorListItem from '@components/ValidatorListItem/ValidatorListItem';
 import AmountAndDenom from '@components/AmountAndDenom/AmountAndDenom';
+import MultiSendCard from '@components/MultiSendCard/MultiSendCard';
 import IconText from '@components/IconText/IconText';
 import Header from '@components/Header/Header';
 import Footer from '@components/Footer/Footer';
@@ -14,13 +16,14 @@ import Loader from '@components/Loader/Loader';
 import Input from '@components/Input/Input';
 import Anchor from '@components/Anchor/Anchor';
 import Success from '@icons/success.svg';
+import Plus from '@icons/plus.svg';
+import { getDenomFromCurrencyToken, getDisplayDenomFromCurrencyToken } from '@utils/currency';
+import { broadCastMessages, shortenAddress } from '@utils/wallets';
+import { getMicroAmount } from '@utils/encoding';
 import { ReviewStepsTypes, STEP, StepDataType, STEPS } from 'types/steps';
 import { KEPLR_CHAIN_INFO_TYPE } from 'types/chain';
 import { VALIDATOR } from 'types/validators';
 import { TRX_MSG } from 'types/transactions';
-import { getDenomFromCurrencyToken, getDisplayDenomFromCurrencyToken } from '@utils/currency';
-import { broadCastMessages } from '@utils/wallets';
-import { getMicroAmount } from '@utils/encoding';
 import {
   defaultTrxFeeOption,
   generateBankMultiSendTrx,
@@ -32,11 +35,6 @@ import {
 import { WalletContext } from '@contexts/wallet';
 import { ChainContext } from '@contexts/chain';
 import { CURRENCY_TOKEN } from 'types/wallet';
-import ButtonRound, { BUTTON_ROUND_COLOR, BUTTON_ROUND_SIZE } from '@components/ButtonRound/ButtonRound';
-import Plus from '@icons/plus.svg';
-import BottomSheet from '@components/BottomSheet/BottomSheet';
-import { shortenAddress } from '../utils/wallets';
-import MultiSendContent from '../components/BottomSheetContent/MultiSendContent';
 
 type ReviewAndSignProps = {
   onSuccess: (data: StepDataType<STEPS.review_and_sign>) => void;
@@ -91,6 +89,12 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
     hideCancelTransactionModal();
   };
 
+  const handleEditMultiSend = (index: number) => () => {
+    if (handleNextMultiSend) {
+      handleNextMultiSend(index);
+    }
+  };
+
   useEffect(() => {
     steps.forEach((s) => {
       if (s.id === STEPS.select_token_and_amount) {
@@ -125,55 +129,67 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
 
   const signTX = async (): Promise<void> => {
     setLoading(true);
-    let trx: TRX_MSG;
+    const trxMsgs: TRX_MSG[] = [];
+    let memo: string | undefined;
     switch (message) {
       case STEPS.bank_MsgSend:
-        trx = generateBankSendTrx({
-          fromAddress: wallet.user!.address,
-          toAddress: dstAddress[0] as string,
-          denom: token ? token[0]?.value : '',
-          amount: getMicroAmount(amount.toString()),
-        });
+        trxMsgs.push(
+          generateBankSendTrx({
+            fromAddress: wallet.user!.address,
+            toAddress: dstAddress[0] as string,
+            denom: getDenomFromCurrencyToken(Array.isArray(token) ? token[0] : token),
+            amount: getMicroAmount(amount.toString()),
+          }),
+        );
+        break;
       case STEPS.bank_MsgMultiSend:
-        trx = generateBankMultiSendTrx({
-          fromAddress: wallet.user!.address,
-          toAddresses: dstAddress as string[],
-          denoms: (token as CURRENCY_TOKEN[]).map((token) => token.denom),
-          amounts: (amount as number[]).map((a) => getMicroAmount(a.toString())),
-        });
+        trxMsgs.push(
+          generateBankMultiSendTrx({
+            fromAddress: wallet.user!.address,
+            toAddresses: dstAddress as string[],
+            denoms: (token as CURRENCY_TOKEN[]).map((token) => token.denom),
+            amounts: (amount as number[]).map((a) => getMicroAmount(a.toString())),
+          }),
+        );
         break;
       case STEPS.staking_MsgDelegate:
-        trx = generateDelegateTrx({
-          delegatorAddress: wallet.user!.address,
-          validatorAddress: dstAddress as string,
-          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
-          amount: getMicroAmount(amount.toString()),
-        });
+        trxMsgs.push(
+          generateDelegateTrx({
+            delegatorAddress: wallet.user!.address,
+            validatorAddress: dstAddress as string,
+            denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
+            amount: getMicroAmount(amount.toString()),
+          }),
+        );
         break;
       case STEPS.staking_MsgUndelegate:
-        trx = generateUndelegateTrx({
-          delegatorAddress: wallet.user!.address,
-          validatorAddress: dstAddress as string,
-          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
-          amount: getMicroAmount(amount.toString()),
-        });
+        trxMsgs.push(
+          generateUndelegateTrx({
+            delegatorAddress: wallet.user!.address,
+            validatorAddress: dstAddress as string,
+            denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
+            amount: getMicroAmount(amount.toString()),
+          }),
+        );
         break;
       case STEPS.staking_MsgRedelegate:
-        trx = generateRedelegateTrx({
-          delegatorAddress: wallet.user!.address,
-          validatorSrcAddress: srcAddress,
-          validatorDstAddress: dstAddress as string,
-          denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
-          amount: getMicroAmount(amount.toString()),
-        });
+        trxMsgs.push(
+          generateRedelegateTrx({
+            delegatorAddress: wallet.user!.address,
+            validatorSrcAddress: srcAddress,
+            validatorDstAddress: dstAddress as string,
+            denom: getDenomFromCurrencyToken(token as CURRENCY_TOKEN),
+            amount: getMicroAmount(amount.toString()),
+          }),
+        );
         break;
       default:
         throw new Error('Unsupported review type');
     }
     const hash = await broadCastMessages(
       wallet,
-      [trx],
-      undefined,
+      trxMsgs,
+      memo,
       defaultTrxFeeOption,
       (Array.isArray(token) ? token[0]?.denom : token?.denom) ?? '',
       chainInfo as KEPLR_CHAIN_INFO_TYPE,
@@ -242,6 +258,7 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
                       token={addressToken}
                       amount={addressAmount}
                       onDeleteClick={showCancelTransactionModal(index)}
+                      onEditClick={handleEditMultiSend(index)}
                       key={`${address}_${index}`}
                     />
                   );
@@ -251,12 +268,10 @@ const ReviewAndSign: FC<ReviewAndSignProps> = ({
               <Plus className={styles.plusIcon} />
             </ButtonRound>
             {typeof trxCancelId === 'number' && (
-              <BottomSheet onClose={hideCancelTransactionModal}>
-                <MultiSendContent
-                  onDeleteMsgClicked={handleDeleteMultiSend}
-                  onCloseBottomSheet={hideCancelTransactionModal}
-                />
-              </BottomSheet>
+              <MultiSendBottomSheet
+                onDeleteMsgClicked={handleDeleteMultiSend}
+                onCloseBottomSheet={hideCancelTransactionModal}
+              />
             )}
           </form>
         ) : message === STEPS.staking_MsgDelegate ? (
