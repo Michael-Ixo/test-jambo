@@ -1756,10 +1756,10 @@
     dotenv "16.0.3"
     protobufjs "6.11.2"
 
-"@ixo/jambo-wallet-sdk@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@ixo/jambo-wallet-sdk/-/jambo-wallet-sdk-0.0.3.tgz#b4cd1d8daf312edcd38af891ea476db7c4e3b0bd"
-  integrity sha512-rFMMu7o72jvhRvDu2vzul+n3H3v744FrXqdJV8PClsfyS3tdkk4Ndm8JhujpogE6mLnlHEY7mz4pvovTudc5Pg==
+"@ixo/jambo-wallet-sdk@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@ixo/jambo-wallet-sdk/-/jambo-wallet-sdk-0.1.1.tgz#f9f01360f946b8c008adea93bb1693088c6d623c"
+  integrity sha512-DaYomyloJMXAEopnb8VXf6tQ6pVevb6oqM5bypbUdx+KFlcamIuCuzp272WX7ctZfwOF7pHCFmHhka0xPYIS5A==
   dependencies:
     "@babel/runtime" "7.19.4"
     "@cosmjs/amino" "0.30.1"
