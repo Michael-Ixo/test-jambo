@@ -46,6 +46,7 @@ export const keplrBroadCastMessage = async (
   fee: TRX_FEE_OPTION,
   feeDenom: string,
   chainInfo: ChainInfo,
+  feeGranter?: string,
 ): Promise<string | null> => {
   const [accounts, offlineSigner] = await connectKeplrAccount(chainInfo);
   if (!accounts || !offlineSigner) return trx_fail();
@@ -58,6 +59,7 @@ export const keplrBroadCastMessage = async (
     fee,
     feeDenom,
     memo,
+    feeGranter,
   };
 
   try {

@@ -21,6 +21,7 @@ export enum STEPS {
   staking_MsgUndelegate = 'staking_MsgUndelegate',
   staking_MsgRedelegate = 'staking_MsgRedelegate',
   distribution_MsgWithdrawDelegatorReward = 'distribution_MsgWithdrawDelegatorReward',
+  auto_MsgWithdrawDelegatorReward = 'auto_MsgWithdrawDelegatorReward',
   claim = 'claim',
 }
 
@@ -32,9 +33,18 @@ export type STEP = {
 };
 
 export const steps: { [key in STEPS]: STEP } = {
-  [STEPS.check_user_balance]: { id: STEPS.check_user_balance, name: 'Check user balance' },
-  [STEPS.get_receiver_address]: { id: STEPS.get_receiver_address, name: 'Get receiver address' },
-  [STEPS.get_validator_delegate]: { id: STEPS.get_validator_delegate, name: 'Get validator address' },
+  [STEPS.check_user_balance]: {
+    id: STEPS.check_user_balance,
+    name: 'Check user balance',
+  },
+  [STEPS.get_receiver_address]: {
+    id: STEPS.get_receiver_address,
+    name: 'Get receiver address',
+  },
+  [STEPS.get_validator_delegate]: {
+    id: STEPS.get_validator_delegate,
+    name: 'Get validator address',
+  },
   [STEPS.get_delegated_validator_undelegate]: {
     id: STEPS.get_delegated_validator_undelegate,
     name: 'Get delegated validator address',
@@ -47,23 +57,66 @@ export const steps: { [key in STEPS]: STEP } = {
     id: STEPS.get_validator_redelegate,
     name: 'Get validator address',
   },
-  [STEPS.select_token_and_amount]: { id: STEPS.select_token_and_amount, name: 'Select token and amount' },
-  [STEPS.select_amount_delegate]: { id: STEPS.select_amount_delegate, name: 'Define amount to delegate' },
-  [STEPS.select_amount_undelegate]: { id: STEPS.select_amount_undelegate, name: 'Define amount to undelegate' },
-  [STEPS.select_amount_redelegate]: { id: STEPS.select_amount_redelegate, name: 'Define amount to redelegate' },
-  [STEPS.define_amount]: { id: STEPS.define_amount, name: 'Define amount' },
-  [STEPS.send_token_to_receiver]: { id: STEPS.send_token_to_receiver, name: 'Send token to receiver' },
-  [STEPS.review_and_sign]: { id: STEPS.review_and_sign, name: 'Review and sign' },
-  [STEPS.bank_MsgSend]: { id: STEPS.bank_MsgSend, name: 'Review and sign' },
-  [STEPS.bank_MsgMultiSend]: { id: STEPS.bank_MsgMultiSend, name: 'Review and sign' },
-  [STEPS.staking_MsgDelegate]: { id: STEPS.staking_MsgDelegate, name: 'Review and sign' },
-  [STEPS.staking_MsgUndelegate]: { id: STEPS.staking_MsgUndelegate, name: 'Review and sign' },
-  [STEPS.staking_MsgRedelegate]: { id: STEPS.staking_MsgRedelegate, name: 'Review and sign' },
+  [STEPS.select_token_and_amount]: {
+    id: STEPS.select_token_and_amount,
+    name: 'Select token and amount',
+  },
+  [STEPS.select_amount_delegate]: {
+    id: STEPS.select_amount_delegate,
+    name: 'Define amount to delegate',
+  },
+  [STEPS.select_amount_undelegate]: {
+    id: STEPS.select_amount_undelegate,
+    name: 'Define amount to undelegate',
+  },
+  [STEPS.select_amount_redelegate]: {
+    id: STEPS.select_amount_redelegate,
+    name: 'Define amount to redelegate',
+  },
+  [STEPS.define_amount]: {
+    id: STEPS.define_amount,
+    name: 'Define amount',
+  },
+  [STEPS.send_token_to_receiver]: {
+    id: STEPS.send_token_to_receiver,
+    name: 'Send token to receiver',
+  },
+  [STEPS.review_and_sign]: {
+    id: STEPS.review_and_sign,
+    name: 'Review and sign',
+  },
+  [STEPS.bank_MsgSend]: {
+    id: STEPS.bank_MsgSend,
+    name: 'Review and sign',
+  },
+  [STEPS.bank_MsgMultiSend]: {
+    id: STEPS.bank_MsgMultiSend,
+    name: 'Review and sign',
+  },
+  [STEPS.staking_MsgDelegate]: {
+    id: STEPS.staking_MsgDelegate,
+    name: 'Review and sign',
+  },
+  [STEPS.staking_MsgUndelegate]: {
+    id: STEPS.staking_MsgUndelegate,
+    name: 'Review and sign',
+  },
+  [STEPS.staking_MsgRedelegate]: {
+    id: STEPS.staking_MsgRedelegate,
+    name: 'Review and sign',
+  },
   [STEPS.distribution_MsgWithdrawDelegatorReward]: {
     id: STEPS.distribution_MsgWithdrawDelegatorReward,
     name: 'Review and sign',
   },
-  [STEPS.claim]: { id: STEPS.claim, name: 'Claim' },
+  [STEPS.auto_MsgWithdrawDelegatorReward]: {
+    id: STEPS.auto_MsgWithdrawDelegatorReward,
+    name: 'Review and sign',
+  },
+  [STEPS.claim]: {
+    id: STEPS.claim,
+    name: 'Claim',
+  },
 };
 
 export type ReviewStepsTypes =
@@ -72,11 +125,18 @@ export type ReviewStepsTypes =
   | STEPS.staking_MsgDelegate
   | STEPS.staking_MsgUndelegate
   | STEPS.staking_MsgRedelegate
+  | STEPS.auto_MsgWithdrawDelegatorReward
   | STEPS.distribution_MsgWithdrawDelegatorReward;
 
-export type AllStepConfigTypes = never;
+interface Auto_msgWithdrawDelegatorReward_config {
+  authzGrantee: string;
+}
 
-export type StepConfigType<T> = never;
+export type AllStepConfigTypes = Auto_msgWithdrawDelegatorReward_config | never;
+
+export type StepConfigType<T> = T extends STEPS.auto_MsgWithdrawDelegatorReward
+  ? Auto_msgWithdrawDelegatorReward_config
+  : never;
 
 interface Check_user_balance {
   balance: number;
@@ -145,6 +205,8 @@ export type StepDataType<T> = T extends STEPS.check_user_balance
   : T extends STEPS.send_token_to_receiver
   ? Send_token_to_receiver
   : T extends STEPS.review_and_sign
+  ? Review_and_sign
+  : T extends STEPS.auto_MsgWithdrawDelegatorReward
   ? Review_and_sign
   : T extends STEPS.distribution_MsgWithdrawDelegatorReward
   ? Review_and_sign

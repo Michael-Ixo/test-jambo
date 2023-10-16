@@ -1,3 +1,6 @@
+import { Timestamp } from '@ixo/impactxclient-sdk/types/codegen/google/protobuf/timestamp';
+import { utils } from '@ixo/impactxclient-sdk';
+
 export const isFulfilled = <T>(p: PromiseSettledResult<T>): p is PromiseFulfilledResult<T> => p.status === 'fulfilled';
 
 export const isRejected = <T>(p: PromiseSettledResult<T>): p is PromiseRejectedResult => p.status === 'rejected';
@@ -32,3 +35,18 @@ const toErrorWithMessage = (error: unknown): ErrorWithMessage => {
 };
 
 export const getErrorMessage = (error: unknown) => toErrorWithMessage(error).message;
+
+export const convertTimestampObjectToTimestamp = (timestamp: Timestamp): number | undefined => {
+  try {
+    const date = utils.proto.fromTimestamp(timestamp);
+    return date.getTime();
+  } catch (error) {
+    return undefined;
+  }
+};
+
+export const addDaysToDate = (date: Date, days: number): Date => {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
+};

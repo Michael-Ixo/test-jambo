@@ -1,5 +1,5 @@
 import { DelegationResponse, Validator } from '@ixo/impactxclient-sdk/types/codegen/cosmos/staking/v1beta1/staking';
-import { createQueryClient, customQueries } from '@ixo/impactxclient-sdk';
+import { cosmos, createQueryClient, customQueries } from '@ixo/impactxclient-sdk';
 
 import { VALIDATOR_FILTER_KEYS as FILTERS } from '@constants/filters';
 import {
@@ -13,6 +13,7 @@ import { CURRENCY, CURRENCY_TOKEN } from 'types/wallet';
 import { QUERY_CLIENT } from 'types/query';
 import { filterValidators } from './filters';
 import { TOKEN_ASSET } from './currency';
+import { convertTimestampObjectToTimestamp } from './misc';
 
 export const initializeQueryClient = async (blockchainRpcUrl: string) => {
   const client = await createQueryClient(blockchainRpcUrl);
@@ -206,5 +207,36 @@ export const queryValidators = async (queryClient: QUERY_CLIENT) => {
   } catch (error) {
     console.error('queryValidators::', error);
     return [];
+  }
+};
+
+export const queryGrant = async (queryClient: QUERY_CLIENT, granter: string, grantee: string, msgTypeUrl = '') => {
+  try {
+    const res = await queryClient.cosmos.authz.v1beta1.grants({
+      granter,
+      grantee,
+      msgTypeUrl,
+    });
+    return res.grants.map((grant) => ({
+      ...grant,
+      expiration: convertTimestampObjectToTimestamp(grant.expiration!),
+      authorization: {
+        ...grant.authorization,
+        value: cosmos.authz.v1beta1.GenericAuthorization.decode(grant.authorization!.value!),
+      },
+    }));
+  } catch (error) {
+    console.error('queryGrant::', error);
+    return [];
+  }
+};
+
+export const queryAllowances = async (queryClient: QUERY_CLIENT, grantee: string) => {
+  try {
+    const res = await queryClient.cosmos.feegrant.v1beta1.allowances({ grantee });
+    return res;
+  } catch (error) {
+    console.error('queryAllowances::', error);
+    return undefined;
   }
 };

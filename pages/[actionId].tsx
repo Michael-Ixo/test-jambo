@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import type { GetStaticPaths, NextPage, GetStaticPropsResult, GetStaticPropsContext } from 'next';
 
 import config from '@constants/config.json';
-import { StepDataType, STEP, STEPS } from 'types/steps';
+import { StepDataType, STEP, STEPS, StepConfigType } from 'types/steps';
 import EmptySteps from '@steps/EmptySteps';
 import ReceiverAddress from '@steps/ReceiverAddress';
 import DefineAmountToken from '@steps/DefineAmountToken';
@@ -16,6 +16,7 @@ import Head from '@components/Head/Head';
 import { VALIDATOR_AMOUNT_CONFIGS, VALIDATOR_CONFIGS } from '@constants/validatorConfigs';
 import ValidatorRewards from '@steps/ClaimRewards';
 import { VALIDATOR_AMOUNT_CONFIG } from 'types/validators';
+import AuthzRewards from '@steps/AuthzRewards';
 
 type ActionPageProps = {
   actionData: ACTION;
@@ -167,6 +168,16 @@ const ActionExecution: NextPage<ActionPageProps> = ({ actionData }) => {
             onSuccess={handleOnNext<STEPS.review_and_sign>}
             onBack={handleBack}
             data={step.data as StepDataType<STEPS.get_validator_delegate>}
+            header={action?.name}
+            message={step.id}
+          />
+        );
+      case STEPS.auto_MsgWithdrawDelegatorReward:
+        return (
+          <AuthzRewards
+            onSuccess={handleOnNext<STEPS.review_and_sign>}
+            onBack={handleBack}
+            config={step.config as StepConfigType<STEPS.auto_MsgWithdrawDelegatorReward>}
             header={action?.name}
             message={step.id}
           />

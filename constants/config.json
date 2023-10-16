@@ -86,6 +86,21 @@
       "name": "Claim Rewards",
       "description": "Get all your IXO rewards (and delegate these to compound)",
       "image": "eKXPPhewkJDLbE1bq1ibod.png"
+    },
+    {
+      "id": "eKXPPhewkJDLbE1bq1iboz",
+      "steps": [
+        {
+          "id": "auto_MsgWithdrawDelegatorReward",
+          "name": "Review and sign",
+          "config": {
+            "authzGrantee": "ixo1qr2du3dkpkcvhghgyxta00f8m6qsspfpume4vr"
+          }
+        }
+      ],
+      "name": "Auto Claim Rewards",
+      "description": "Grant Authz to Claim rewards on stakes daily",
+      "image": "eKXPPhewkJDLbE1bq1ibod.png"
     }
   ]
 }

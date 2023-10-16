@@ -1,4 +1,5 @@
 import { cosmos } from '@ixo/impactxclient-sdk';
+import { Grant } from '@ixo/impactxclient-sdk/types/codegen/cosmos/authz/v1beta1/authz';
 import { Coin } from '@ixo/impactxclient-sdk/types/codegen/cosmos/base/v1beta1/coin';
 
 import { TRX_FEE, TRX_FEE_OPTION, TRX_MSG } from 'types/transactions';
@@ -148,5 +149,49 @@ export const generateWithdrawRewardTrx = ({
   value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.fromPartial({
     delegatorAddress,
     validatorAddress,
+  }),
+});
+
+export const generateAuthzGrantTrx = ({
+  granter,
+  grantee,
+  grant,
+}: {
+  granter: string;
+  grantee: string;
+  grant: Grant;
+}) => ({
+  typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
+  value: cosmos.authz.v1beta1.MsgGrant.fromPartial({
+    granter,
+    grantee,
+    grant,
+  }),
+});
+
+export const generateGenericAuthorizationTrx = ({ msg }: { msg: string }, encode = false) => {
+  const value = cosmos.authz.v1beta1.GenericAuthorization.fromPartial({
+    msg,
+  });
+  return {
+    typeUrl: '/cosmos.authz.v1beta1.GenericAuthorization',
+    value: encode ? cosmos.authz.v1beta1.GenericAuthorization.encode(value).finish() : value,
+  };
+};
+
+export const generateAuthzRevokeTrx = ({
+  granter,
+  grantee,
+  msgTypeUrl,
+}: {
+  granter: string;
+  grantee: string;
+  msgTypeUrl: string;
+}) => ({
+  typeUrl: '/cosmos.authz.v1beta1.MsgRevoke',
+  value: cosmos.authz.v1beta1.MsgRevoke.fromPartial({
+    granter,
+    grantee,
+    msgTypeUrl,
   }),
 });

@@ -102,16 +102,17 @@ export const broadCastMessages = async (
   fee: TRX_FEE_OPTION,
   suggestedFeeDenom: string,
   chain: KEPLR_CHAIN_INFO_TYPE,
+  feeGranter?: string,
 ): Promise<string | null> => {
   if (!chain) return null;
   const feeDenom = getFeeDenom(suggestedFeeDenom, chain.feeCurrencies as TOKEN_ASSET[]);
   switch (wallet.walletType) {
     case WALLET_TYPE.keplr:
-      return await keplrBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await keplrBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo, feeGranter);
     case WALLET_TYPE.opera:
-      return await operaBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await operaBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo, feeGranter);
     case WALLET_TYPE.walletConnect:
-      return await WCBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await WCBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo, feeGranter);
     default:
       return null;
   }

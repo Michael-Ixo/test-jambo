@@ -1,7 +1,7 @@
 import { createSigningClient, SigningStargateClient, cosmos } from '@ixo/impactxclient-sdk';
-import { assertIsDeliverTxSuccess } from '@cosmjs/stargate';
+import { StdFee, assertIsDeliverTxSuccess } from '@cosmjs/stargate';
 
-import { TRX_FEE, TRX_FEE_OPTION, TRX_FEE_OPTIONS, TRX_MSG } from 'types/transactions';
+import { TRX_FEE_OPTION, TRX_FEE_OPTIONS, TRX_MSG } from 'types/transactions';
 import { EncodeObject } from '@cosmjs/proto-signing';
 
 export const initStargateClient = async (endpoint: string, offlineSigner: any): Promise<SigningStargateClient> => {
@@ -34,6 +34,7 @@ export const sendTransaction = async (
     memo: string;
     fee: TRX_FEE_OPTION;
     feeDenom: string;
+    feeGranter?: string;
   },
 ): Promise<any> => {
   // console.log({ client, delegatorAddress, payload });
@@ -44,7 +45,7 @@ export const sendTransaction = async (
         : await client.simulate(delegatorAddress, payload.msgs as EncodeObject[], payload.memo);
     const gas = gasUsed * (payload.feeDenom === 'uixo' ? payload?.msgs?.length ?? 1 : 1.3);
     const gasOptions = calculateGasOptions(gas);
-    const fee: TRX_FEE = {
+    const fee: StdFee = {
       amount: [
         {
           denom: payload.feeDenom,
@@ -52,6 +53,7 @@ export const sendTransaction = async (
         },
       ],
       gas: String(Math.round(gas)),
+      granter: payload.feeGranter ?? undefined,
     };
     const result = await client.signAndBroadcast(delegatorAddress, payload.msgs as any, fee, payload.memo);
     assertIsDeliverTxSuccess(result);

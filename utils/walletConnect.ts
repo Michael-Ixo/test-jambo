@@ -213,6 +213,7 @@ export const WCBroadCastMessage = async (
   fee: TRX_FEE_OPTION,
   feeDenom: string,
   chainInfo: ChainInfo,
+  feeGranter?: string,
 ): Promise<string | null> => {
   // @ts-ignore
   const offlineSigner = getOfflineSigner();
@@ -226,6 +227,7 @@ export const WCBroadCastMessage = async (
     fee,
     feeDenom,
     memo,
+    feeGranter,
   };
 
   try {
