@@ -22,7 +22,7 @@ const Home: NextPage = () => {
       <Header />
 
       <main className={cls(utilsStyles.main)}>
-        {!wallet?.user?.address ? (
+        {!wallet?.user?.address || !wallet?.user?.did ? (
           <IconText title='You must be logged in to use the assistant' Img={SadFace} imgSize={50} />
         ) : (
           <AssistantScreen />

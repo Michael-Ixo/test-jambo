@@ -6,9 +6,9 @@ import styles from './Wallets.module.scss';
 import ColoredIcon, { ICON_COLOR } from '@components/ColoredIcon/ColoredIcon';
 import WalletCard from '@components/CardWallet/CardWallet';
 import WalletImg from '@icons/wallet.svg';
-import { getWalletConnect } from '@utils/walletConnect';
-import { getImpactsX } from '@utils/impactsX';
-import { getOpera } from '@utils/opera';
+// import { getWalletConnect } from '@utils/walletConnect';
+// import { getImpactsX } from '@utils/impactsX';
+// import { getOpera } from '@utils/opera';
 import { getKeplr } from '@utils/keplr';
 import { WALLETS } from '@constants/wallet';
 import { WALLET_TYPE } from 'types/wallet';
@@ -19,13 +19,13 @@ type WalletsProps = {
 
 const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
   const keplrWallet = getKeplr();
-  const operaWallet = getOpera();
-  const impactsXWallet = getImpactsX();
-  const walletConnect = getWalletConnect();
+  // const operaWallet = getOpera();
+  // const impactsXWallet = getImpactsX();
+  // const walletConnect = getWalletConnect();
 
   return (
     <div className={cls(styles.wallets, className)} {...other}>
-      {operaWallet || keplrWallet || walletConnect ? (
+      {keplrWallet ? (
         <>
           <div className={utilsStyles.spacer3} />
           <h3>Choose your wallet</h3>
@@ -37,7 +37,7 @@ const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
               onClick={() => onSelected(WALLET_TYPE.keplr)}
             />
           )}
-          {!!operaWallet && (
+          {/* {!!operaWallet && (
             <WalletCard
               name={WALLETS.opera.name}
               img={WALLETS.opera.img}
@@ -57,7 +57,7 @@ const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
               img={WALLETS.walletConnect.img}
               onClick={() => onSelected(WALLET_TYPE.walletConnect)}
             />
-          )}
+          )} */}
         </>
       ) : (
         <>
@@ -68,7 +68,7 @@ const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
           <div className={utilsStyles.spacer1} />
           <h3>No Wallet Detected</h3>
           <div className={utilsStyles.spacer2} />
-          <p>This app works best in an Opera mobile browser on Android</p>
+          <p>This assistant app works best with Keplr in desktop browser</p>
         </>
       )}
     </div>

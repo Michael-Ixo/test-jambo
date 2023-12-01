@@ -208,3 +208,13 @@ export const queryValidators = async (queryClient: QUERY_CLIENT) => {
     return [];
   }
 };
+
+export const queryIidDocument = async (queryClient: QUERY_CLIENT, did: string) => {
+  try {
+    const res = await queryClient.ixo.iid.v1beta1.iidDocument({ id: did });
+    return res;
+  } catch (error) {
+    console.error('queryIidDocument::', error);
+    return undefined;
+  }
+};

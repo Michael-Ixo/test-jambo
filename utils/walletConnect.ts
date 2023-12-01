@@ -270,9 +270,9 @@ export const WCBroadCastMessage = async (
 
     if (!result) throw new Error('Transaction Failed');
 
-    return result.transactionHash;
+    return `Transaction successful. Hash: ${result.transactionHash}`;
   } catch (e) {
     Toast.errorToast(`Transaction Failed`);
-    return null;
+    throw e;
   }
 };

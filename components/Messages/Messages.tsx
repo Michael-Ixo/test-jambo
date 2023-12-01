@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { ChatMessage } from '@ixo/assistant-sdk/types/types/assistant';
 
 import styles from './Messages.module.scss';
-import { ChatMessage } from 'assistant/types';
 import ColoredIcon, { ICON_COLOR } from '@components/ColoredIcon/ColoredIcon';
 import UserIcon from '@icons/user_icon.svg';
 import AssistantIcon from '@icons/assistant_icon.svg';

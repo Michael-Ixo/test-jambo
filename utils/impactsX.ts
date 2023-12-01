@@ -58,9 +58,9 @@ export const impactsXBroadCastMessage = async (
 
     if (!result) throw new Error('Transaction Failed - ' + JSON.stringify(result));
 
-    return result.transactionHash;
+    return `Transaction successful. Hash: ${result.transactionHash}`;
   } catch (e) {
     Toast.errorToast(`Transaction Failed ${(e as Error).message}`);
-    return null;
+    throw e;
   }
 };

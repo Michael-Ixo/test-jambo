@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect, HTMLAttributes, useContext } from 'react';
+import { createContext, useState, useEffect, HTMLAttributes, useContext, useRef } from 'react';
 import { ChainNetwork } from '@ixo/impactxclient-sdk/types/custom_queries/chain.types';
 import cls from 'classnames';
+import { utils } from '@ixo/impactxclient-sdk';
 
 import utilsStyles from '@styles/utils.module.scss';
 import { SiteHeader } from '@components/Header/Header';
@@ -16,6 +17,7 @@ import {
   queryDelegationTotalRewards,
   queryDelegatorDelegations,
   queryDelegatorUnbondingDelegations,
+  queryIidDocument,
   queryValidators,
 } from '@utils/query';
 import { EVENT_LISTENER_TYPE } from '@constants/events';
@@ -58,6 +60,7 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
     queryDelegatorUnbondingDelegations,
     wallet?.user?.address,
   );
+  const walletInitializing = useRef<boolean>(false);
 
   const updateWallet = (newWallet: WALLET, override: boolean = false) => {
     if (override) setWallet({ ...DEFAULT_WALLET, ...newWallet });
@@ -67,11 +70,30 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
   const updateWalletType = (newWalletType: WALLET_TYPE) => updateWallet({ walletType: newWalletType });
 
   const initializeWallets = async () => {
+    if (!queryClient) {
+      setTimeout(() => initializeWallets(), 1000);
+      return;
+    }
+    if (walletInitializing.current) return;
+    walletInitializing.current = true;
     try {
       const user = await initializeWallet(wallet.walletType, chainInfo as KEPLR_CHAIN_INFO_TYPE);
+      console.log('user', user);
+      console.log('queryClient', queryClient);
+      if (user?.pubKey) {
+        console.log('pubKye', user.pubKey);
+        const did = utils.did.generateSecpDid(user.pubKey);
+        console.log('did', did);
+        const didLedgered = queryClient ? await queryIidDocument(queryClient, did) : undefined;
+        console.log('didLedgered', didLedgered);
+        user.did = didLedgered ? did : undefined;
+      }
+      console.log({ user });
       updateWallet({ user });
     } catch (error) {
       console.error('Initializing wallets error:', error);
+    } finally {
+      walletInitializing.current = false;
     }
   };
 

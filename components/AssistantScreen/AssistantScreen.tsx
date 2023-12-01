@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-// TODO:M: uncomment below to use assistant-sdk
-// import Assistant from '@ixo/assistant-sdk';
-// TODO:M: and comment below to use assistant above
-import Assistant from 'assistant/assistant';
+import Assistant from '@ixo/assistant-sdk';
+import { ChatMessage } from '@ixo/assistant-sdk/types/types/assistant';
+
 import styles from './AssistantScreen.module.scss';
 import { WalletContext } from '@contexts/wallet';
 import { ChainContext } from '@contexts/chain';
 import { broadCastMessages } from '@utils/wallets';
 import useEffectOnce from '@hooks/useEffectOnce';
 import Messages from '@components/Messages/Messages';
-import { ChatMessage } from 'assistant/types';
 import { decodeTransactionBody } from '@utils/encoding';
 import AssistantInput from '@components/AssistantInput/AssistantInput';
 
@@ -25,10 +23,9 @@ const AssistantScreen = () => {
   useEffectOnce(() => {
     if (!assistantRef.current) {
       assistantRef.current = new Assistant({
-        assistantUrl: 'http://localhost:3003',
-        apiKey: 'Bearer xvz1evFS4wEEPTGEFPHBogjmb1evFS4wEEPTGEFPHBogwEEPTGEFPHBogjmb1evFS4',
-        address: wallet.user!?.address ?? '',
-        did: wallet.user!?.did ?? 'did:x:123456789abcdefghi',
+        apiKey: process.env.NEXT_PUBLIC_ASSISTANT_API_KEY!,
+        address: wallet.user!?.address,
+        did: wallet.user!?.did!,
         network: chain.chainNetwork,
       });
       const observer: any = {
