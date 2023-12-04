@@ -22,6 +22,10 @@ const AssistantScreen = () => {
 
   useEffectOnce(() => {
     if (!assistantRef.current) {
+      console.log(
+        'assistant api key',
+        !!process.env.NEXT_PUBLIC_ASSISTANT_API_KEY && (process.env.NEXT_PUBLIC_ASSISTANT_API_KEY?.length ?? 0) > 20,
+      );
       assistantRef.current = new Assistant({
         apiKey: process.env.NEXT_PUBLIC_ASSISTANT_API_KEY!,
         address: wallet.user!?.address,
