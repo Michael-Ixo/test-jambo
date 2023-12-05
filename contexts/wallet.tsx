@@ -78,17 +78,11 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
     walletInitializing.current = true;
     try {
       const user = await initializeWallet(wallet.walletType, chainInfo as KEPLR_CHAIN_INFO_TYPE);
-      console.log('user', user);
-      console.log('queryClient', queryClient);
       if (user?.pubKey) {
-        console.log('pubKye', user.pubKey);
         const did = utils.did.generateSecpDid(user.pubKey);
-        console.log('did', did);
         const didLedgered = queryClient ? await queryIidDocument(queryClient, did) : undefined;
-        console.log('didLedgered', didLedgered);
         user.did = didLedgered ? did : undefined;
       }
-      console.log({ user });
       updateWallet({ user });
     } catch (error) {
       console.error('Initializing wallets error:', error);
