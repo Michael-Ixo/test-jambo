@@ -1,29 +1,28 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import Assistant from '@ixo/assistant-sdk';
 import { ChatMessage } from '@ixo/assistant-sdk/types/types/assistant';
+import Assistant from '@ixo/assistant-sdk';
 
-import styles from './AssistantScreen.module.scss';
-import { WalletContext } from '@contexts/wallet';
-import { ChainContext } from '@contexts/chain';
-import { broadCastMessages } from '@utils/wallets';
-import useEffectOnce from '@hooks/useEffectOnce';
-import Messages from '@components/Messages/Messages';
-import { decodeTransactionBody } from '@utils/encoding';
 import AssistantInput from '@components/AssistantInput/AssistantInput';
+import { decodeTransactionBody } from '@utils/encoding';
+import Messages from '@components/Messages/Messages';
+import styles from './AssistantScreen.module.scss';
+import { broadCastMessages } from '@utils/wallets';
+import { WalletContext } from '@contexts/wallet';
+import useEffectOnce from '@hooks/useEffectOnce';
+import { ChainContext } from '@contexts/chain';
 
 const AssistantScreen = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+
   const { wallet } = useContext(WalletContext);
   const { chainInfo, chain } = useContext(ChainContext);
 
   const assistantRef: any = useRef();
-  const containerRef = useRef(null);
 
   useEffectOnce(() => {
     if (!assistantRef.current) {
       assistantRef.current = new Assistant({
-        assistantUrl: 'http://localhost:3003',
         apiKey: process.env.NEXT_PUBLIC_ASSISTANT_API_KEY!,
         address: wallet.user!?.address,
         did: wallet.user!?.did!,
@@ -31,12 +30,11 @@ const AssistantScreen = () => {
       });
       const observer: any = {
         update: (updatedMessages: ChatMessage[]) => {
-          console.log('updatedMessages', updatedMessages);
           setMessages([...updatedMessages]);
         },
       };
       assistantRef.current.subscribe(observer);
-      assistantRef.current.newChat(true);
+      assistantRef.current.newChat(false);
       return () => {
         assistantRef.current.unsubscribe(observer);
       };
@@ -54,12 +52,12 @@ const AssistantScreen = () => {
 
   const onSubmit = async (input: string) => {
     setLoading(true);
-    await assistantRef.current?.chat(true, input);
+    await assistantRef.current?.chat(false, input);
     setLoading(false);
   };
 
   return (
-    <div className={styles.assistantContainer} ref={containerRef}>
+    <div className={styles.assistantContainer}>
       {!!assistantRef.current && <Messages messages={messages ?? []} />}
       <AssistantInput loading={loading} onSubmit={onSubmit} />
     </div>
