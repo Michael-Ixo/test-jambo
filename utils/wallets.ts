@@ -11,19 +11,15 @@ import { initializeOpera, operaBroadCastMessage } from './opera';
 import { getFeeDenom, TOKEN_ASSET } from './currency';
 import { DELEGATION, UNBONDING_DELEGATION } from 'types/validators';
 import { sumArray } from './misc';
+import { initializeSignX, signXBroadCastMessage } from './signX';
+import { getSwapTokens } from './swap';
 
 // TODO: add address regex validations
 export const shortenAddress = (address: string) =>
   (address?.length && address.length > 19 ? address.slice(0, 12).concat('...').concat(address.slice(-7)) : address) ??
   '';
 
-// TODO: provide denom as 5th param to only group for the denom
-export const groupWalletAssets = (
-  balances: CURRENCY_TOKEN[],
-  delegations: DELEGATION[],
-  unbondingDelegations: UNBONDING_DELEGATION[],
-): TOKEN_BALANCE[] => {
-  const assets = new Map<string, TOKEN_BALANCE>();
+const setAssetsByBalances = (assets: Map<string, TOKEN_BALANCE>, balances: CURRENCY_TOKEN[]) => {
   for (const balance of balances) {
     assets.set(balance.denom, {
       denom: balance.denom,
@@ -33,6 +29,28 @@ export const groupWalletAssets = (
       token: balance,
     });
   }
+};
+
+export const groupWalletSwapAssets = (balances: CURRENCY_TOKEN[], tokenBalances: CURRENCY_TOKEN[]): TOKEN_BALANCE[] => {
+  const assets = new Map<string, TOKEN_BALANCE>();
+
+  setAssetsByBalances(assets, getSwapTokens(balances));
+  setAssetsByBalances(assets, tokenBalances);
+
+  return Array.from(assets.values());
+};
+
+// TODO: provide denom as 5th param to only group for the denom
+export const groupWalletAssets = (
+  balances: CURRENCY_TOKEN[],
+  delegations: DELEGATION[],
+  unbondingDelegations: UNBONDING_DELEGATION[],
+  nonNativeTokens: CURRENCY_TOKEN[] = [],
+): TOKEN_BALANCE[] => {
+  const assets = new Map<string, TOKEN_BALANCE>();
+  setAssetsByBalances(assets, balances);
+  setAssetsByBalances(assets, nonNativeTokens);
+
   for (const delegation of delegations) {
     const asset = assets.get(delegation.balance.denom);
     assets.set(
@@ -81,15 +99,18 @@ export const groupWalletAssets = (
 export const initializeWallet = async (
   walletType: WALLET_TYPE | undefined,
   chain: KEPLR_CHAIN_INFO_TYPE,
+  walletUser?: USER,
 ): Promise<USER | undefined> => {
   if (!chain) return;
   switch (walletType) {
     case WALLET_TYPE.keplr:
-      return await initializeKeplr(chain as ChainInfo);
+      return await initializeKeplr(chain);
     case WALLET_TYPE.opera:
-      return await initializeOpera(chain as ChainInfo);
+      return await initializeOpera(chain);
     case WALLET_TYPE.walletConnect:
-      return await initializeWC(chain as ChainInfo);
+      return await initializeWC(chain);
+    case WALLET_TYPE.signX:
+      return await initializeSignX(chain, walletUser);
     default:
       return;
   }
@@ -107,11 +128,13 @@ export const broadCastMessages = async (
   const feeDenom = getFeeDenom(suggestedFeeDenom, chain.feeCurrencies as TOKEN_ASSET[]);
   switch (wallet.walletType) {
     case WALLET_TYPE.keplr:
-      return await keplrBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await keplrBroadCastMessage(msgs, memo, fee, feeDenom, chain);
     case WALLET_TYPE.opera:
-      return await operaBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await operaBroadCastMessage(msgs, memo, fee, feeDenom, chain);
     case WALLET_TYPE.walletConnect:
-      return await WCBroadCastMessage(msgs, memo, fee, feeDenom, chain as ChainInfo);
+      return await WCBroadCastMessage(msgs, memo, fee, feeDenom, chain);
+    case WALLET_TYPE.signX:
+      return await signXBroadCastMessage(msgs, memo, fee, feeDenom, chain, wallet);
     default:
       return null;
   }

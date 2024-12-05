@@ -1,6 +1,7 @@
 import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import cls from 'classnames';
+import { createRoot } from 'react-dom/client';
 
 import styles from './Modal.module.scss';
 import Cross from '@icons/cross.svg';
@@ -56,3 +57,29 @@ function Modal({ onClose, children, title, className, ...other }: ModalProps) {
 }
 
 export default Modal;
+
+/**
+ * Render a modal with the given content
+ * @param content The content to render in the modal
+ * @param onClose Function to execute when manually close the modal through clicking the close button or backdrop
+ * @returns Function to close the modal, only removing the React component, not executing the onClose function
+ */
+export const renderModal = (content: ReactNode, onClose: () => void) => {
+  const modalDiv = document.getElementById('custom-root') as HTMLElement;
+  const root = createRoot(modalDiv);
+
+  // Function to execute when manually close the modal
+  const handleManualClose = () => {
+    handleClose();
+    onClose();
+  };
+
+  const handleClose = () => {
+    root.unmount(); // Unmount the React component
+  };
+
+  // Render your Modal component into the div
+  root.render(<Modal onClose={handleManualClose}>{content}</Modal>);
+
+  return handleClose;
+};

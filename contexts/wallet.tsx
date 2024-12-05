@@ -1,31 +1,36 @@
-import { createContext, useState, useEffect, HTMLAttributes, useContext } from 'react';
+import { createContext, HTMLAttributes, useContext, useEffect, useState, useRef } from 'react';
+
 import { ChainNetwork } from '@ixo/impactxclient-sdk/types/custom_queries/chain.types';
 import cls from 'classnames';
 
-import utilsStyles from '@styles/utils.module.scss';
 import { SiteHeader } from '@components/Header/Header';
 import Loader from '@components/Loader/Loader';
-import { WALLET, WALLET_TYPE, WALLET_DELEGATIONS, WALLET_DELEGATION_REWARDS } from 'types/wallet';
-import { KEPLR_CHAIN_INFO_TYPE } from 'types/chain';
-import { VALIDATOR } from 'types/validators';
+import { EVENT_LISTENER_TYPE } from '@constants/events';
+import useWalletData from '@hooks/useWalletData';
+import utilsStyles from '@styles/utils.module.scss';
 import { getLocalStorage, setLocalStorage } from '@utils/persistence';
-import { generateValidators } from '@utils/validators';
-import { initializeWallet } from '@utils/wallets';
 import {
   queryAllBalances,
   queryDelegationTotalRewards,
   queryDelegatorDelegations,
   queryDelegatorUnbondingDelegations,
+  queryTokenBalances,
   queryValidators,
 } from '@utils/query';
-import { EVENT_LISTENER_TYPE } from '@constants/events';
-import useWalletData from '@hooks/useWalletData';
+import { generateValidators } from '@utils/validators';
+import { initializeWallet } from '@utils/wallets';
+import { KEPLR_CHAIN_INFO_TYPE } from 'types/chain';
+import { VALIDATOR } from 'types/validators';
+import { WALLET, WALLET_DELEGATION_REWARDS, WALLET_DELEGATIONS, WALLET_TYPE } from 'types/wallet';
+
 import { ChainContext } from './chain';
 
 export const WalletContext = createContext({
   wallet: {} as WALLET,
   updateWalletType: (newWalletType: WALLET_TYPE) => {},
   fetchAssets: () => {},
+  fetchBalances: () => {},
+  fetchTokenBalances: () => {},
   clearAssets: () => {},
   updateChainId: (chainId: string) => {},
   updateChainNetwork: (chainNetwork: ChainNetwork) => {},
@@ -41,6 +46,7 @@ const DEFAULT_WALLET: WALLET = {
 };
 
 export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => {
+  const firstLoad = useRef(false);
   const [wallet, setWallet] = useState<WALLET>(DEFAULT_WALLET);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [validators, setValidators] = useState<VALIDATOR[]>();
@@ -58,6 +64,10 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
     queryDelegatorUnbondingDelegations,
     wallet?.user?.address,
   );
+  const [tokenBalances, fetchTokenBalances, clearTokenBalances] = useWalletData(
+    queryTokenBalances,
+    wallet?.user?.address,
+  );
 
   const updateWallet = (newWallet: WALLET, override: boolean = false) => {
     if (override) setWallet({ ...DEFAULT_WALLET, ...newWallet });
@@ -68,7 +78,7 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
 
   const initializeWallets = async () => {
     try {
-      const user = await initializeWallet(wallet.walletType, chainInfo as KEPLR_CHAIN_INFO_TYPE);
+      const user = await initializeWallet(wallet.walletType, chainInfo as KEPLR_CHAIN_INFO_TYPE, wallet.user);
       updateWallet({ user });
     } catch (error) {
       console.error('Initializing wallets error:', error);
@@ -82,12 +92,14 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
     fetchDelegations();
     fetchDelegationRewards();
     fetchUnbondingDelegations();
+    fetchTokenBalances();
   };
   const clearAssets = () => {
     clearBalances();
     clearDelegations();
     clearDelegationRewards();
     clearUnbondingDelegations();
+    clearTokenBalances();
   };
 
   const updateValidators = async () => {
@@ -173,17 +185,24 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
   }, [chain.chainLoading]);
 
   useEffect(() => {
+    if (firstLoad.current) return;
+    firstLoad.current = true;
+
     // Comment out below to reset config
     // setLocalStorage('wallet', {});
     const persistedWallet = getLocalStorage<WALLET>('wallet');
-    setLoaded(true);
-    if (persistedWallet) setWallet(persistedWallet);
+    const pubKey = persistedWallet?.user?.pubKey && new Uint8Array(Object.values(persistedWallet.user.pubKey));
+    if (persistedWallet)
+      setWallet({ ...persistedWallet, user: pubKey ? ({ ...persistedWallet.user, pubKey } as any) : undefined });
+    setTimeout(() => setLoaded(true), 500);
+    window.addEventListener(EVENT_LISTENER_TYPE.wallet_logout, logoutWallet);
   }, []);
 
   const value = {
     wallet: {
       ...wallet,
       balances,
+      tokenBalances,
       delegations,
       delegationRewards,
       unbondingDelegations,
@@ -192,11 +211,14 @@ export const WalletProvider = ({ children }: HTMLAttributes<HTMLDivElement>) => 
         delegations.loading ||
         delegationRewards.loading ||
         unbondingDelegations.loading ||
+        tokenBalances.loading ||
         chain.chainLoading,
     } as WALLET,
     updateWalletType,
     fetchAssets,
     clearAssets,
+    fetchBalances,
+    fetchTokenBalances,
     updateChainId: updateChainId(clearAssets),
     updateChainNetwork: updateChainNetwork(clearAssets),
     logoutWallet,

@@ -42,13 +42,14 @@ const Wallets = ({ onSelected, className, ...other }: WalletsProps) => {
               onClick={() => onSelected(WALLET_TYPE.opera)}
             />
           )}
-          {!!walletConnect && (
+          {/* {!!walletConnect && (
             <WalletCard
               name={WALLETS.walletConnect.name}
               img={WALLETS.walletConnect.img}
               onClick={() => onSelected(WALLET_TYPE.walletConnect)}
             />
-          )}
+          )} */}
+          <WalletCard name={WALLETS.signX.name} img={WALLETS.signX.img} onClick={() => onSelected(WALLET_TYPE.signX)} />
         </>
       ) : (
         <>
